@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonsterAR 付費驗證系統</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 40px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .api-box {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        .status-table {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .status-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .status-table th, .status-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .status-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px 10px 10px 0;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn.secondary {
+            background: #2196F3;
+        }
+        .btn.secondary:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 MonsterAR 付費驗證系統</h1>
+        <p>簡化版API系統，透過修改單一數字來控制所有用戶的付費狀態</p>
+        
+        <div class="status-table">
+            <h2>📋 狀態代碼說明</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>statusCode</th>
+                        <th>對應行為</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1</strong></td>
+                        <td>已付費</td>
+                        <td>正常使用，不做任何動作</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2</strong></td>
+                        <td>未付費</td>
+                        <td>顯示浮水印</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3</strong></td>
+                        <td>長期拖欠</td>
+                        <td>彈出提示並強制退出</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4</strong></td>
+                        <td>網路異常</td>
+                        <td>顯示網路錯誤提示</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h2>🔗 API 端點</h2>
+        <div class="api-box">
+            <div><strong>HTML API:</strong> <a href="api.html" style="color: #87CEEB;">api.html</a></div>
+            <div><strong>JSON API:</strong> <a href="payment-config.json" style="color: #87CEEB;">payment-config.json</a></div>
+            <div><strong>Unity 請求:</strong> api.html?api=true</div>
+        </div>
+        
+        <div id="current-status"></div>
+        
+        <h2>⚡ 快速操作</h2>
+        <a href="api.html" class="btn">查看當前狀態</a>
+        <a href="https://github.com/alals93vu6/Money-Return-Detector" class="btn secondary">GitHub 編輯</a>
+        
+        <div style="margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+            <h3>🔧 維護方式</h3>
+            <ol>
+                <li>編輯 <code>payment-config.json</code> 或 <code>api.html</code></li>
+                <li>修改 statusCode 數值 (1-4)</li>
+                <li>Git commit + push</li>
+                <li>1-2分鐘後生效</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        // 載入當前狀態
+        fetch('payment-config.json')
+            .then(response => response.json())
+            .then(data => {
+                const statusDiv = document.getElementById('current-status');
+                statusDiv.innerHTML = `
+                    <h2>📊 當前狀態</h2>
+                    <div class="api-box">
+                        <div><strong>Status Code:</strong> ${data.statusCode}</div>
+                        <div><strong>Message:</strong> ${data.message}</div>
+                        <div style="margin-top: 10px; color: #87CEEB;">
+                            <small>最後更新: ${new Date().toLocaleString('zh-TW')}</small>
+                        </div>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.log('無法載入狀態:', error);
+            });
+    </script>
+</body>
+</html>
